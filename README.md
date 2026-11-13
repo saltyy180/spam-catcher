@@ -1,4 +1,4 @@
-# auth-server
+# Spam-Catcher
 
 Login service made using flask designed to evaluate layered protection against bots performing credential stuffing attacks and proxy rotation.
 
