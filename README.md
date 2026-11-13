@@ -1,25 +1,25 @@
-# Login Rate Limiter & Bot Detection Middleware
+# auth-server
 
-A lightweight Flask authentication demo built to test multi-layered defenses against automated credential-stuffing and rotating-proxy attacks.
+Login service made using flask designed to evaluate layered protection against bots performing credential stuffing attacks and proxy rotation.
 
-## Defense Layers
-- **Client & Header Inspection:** Flags automated HTTP clients (`python-requests`, `curl`, etc.) and requests missing standard browser `Sec-Fetch-*` and `Accept-Language` headers.
-- **Single-Use CSRF / Nonce Tokens:** Generates short-lived tokens per page load to block direct API spam from proxy pools.
-- **Honeypot Field:** Catches automated form-fillers using a hidden input field invisible to normal users.
-- **Dual Sliding-Window Rate Limiting:** Tracks failed attempts across both client IP (`X-Forwarded-For`) and target username, applying silent temporary cooldowns (`HTTP 429`) without exposing lockout timers.
+## Working mechanism
+- **Client & Header Verification**: Blocks default scripting agents like `python-requests` and `curl` and requests without required headers from browser (`Sec-Fetch-*` and `Accept-Language`).
+- **One-Time Page Tokenization**: Adds one-time CSRF token for each new page load to prevent bots to just spam `/login` endpoint without opening the page.
+- **Honeypot**: Hidden form input is used as a honeypot for bots filling out the form automatically.
+- **Rate Limiting**: Failed login attempts per IP (`X-Forwarded-For`) and account name are tracked in sliding window and cause HTTP `429` response to be returned silently.
 
-## Project Structure
-- `app.py` - Flask server with bot detection, rate-limiting logic, and `/metrics` endpoint.
-- `templates/loginpage.html` - Login UI with hidden honeypot field and automatic token refresh.
-- `attacker.py` - Multi-stage test script simulating raw requests, header spoofing + proxy rotation, and token scraping.
+## Directory
+- `app.py` - Flask service, bot detection, rate limiting implementation and `/metrics` endpoint.
+- `templates/loginpage.html` - Login form with honeypot input and CSRF token refreshing.
+- `attacker.py` - Bot with three stages of attack (raw requests, spoofed headers and proxies rotation, token extraction).
 
-## Running Locally
+## Installation & execution
 ```bash
 pip install -r requirements.txt
-python app.py
+py app.py
 ```
 
-In a second terminal, run the automated attack simulation:
+And in other terminal run attacker script:
 ```bash
-python attacker.py
+py attacker.py
 ```
